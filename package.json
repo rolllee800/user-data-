@@ -1,0 +1,16 @@
+{
+  "name": "user-agent-header",
+  "version": "1.0.0",
+  "description": "User-Agent header display page deployed on Vercel",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
