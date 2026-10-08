@@ -6,11 +6,16 @@
     "dev": "vercel dev",
     "deploy": "vercel --prod"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@vercel/kv": "^3.0.0"
+  },
   "devDependencies": {
     "vercel": "^32.0.0"
   },
   "engines": {
     "node": ">=18"
+  },
+  "allowScripts": {
+    "esbuild@0.14.47": true
   }
 }

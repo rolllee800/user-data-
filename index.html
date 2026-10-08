@@ -1,99 +1,27 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>User-Agent header</title>
+  <title></title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: #FFFFFF;
-      color: #111;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.6;
-      padding: 40px 20px;
-      min-height: 100vh;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    h1 { font-size: 1.75rem; font-weight: 600; margin-bottom: 8px; }
-    .subtitle { color: #444; margin-bottom: 32px; }
-    .description { color: #333; margin-bottom: 32px; white-space: pre-wrap; }
-    .data-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 16px;
-      margin-bottom: 12px;
-      word-break: break-all;
-    }
-    .label { font-weight: 600; min-width: 140px; flex-shrink: 0; }
-    .value { color: #222; word-break: break-all; }
-    .raw-ua { font-family: monospace; font-size: 0.875rem; line-height: 1.5; }
+    body { display: none; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>User-Agent header</h1>
-    <p class="subtitle">Data yang dikirim browser Anda ke setiap website</p>
-    <p class="description">Setiap kali browser Anda membuka halaman web, ia mengirimkan kartu nama digital bernama User-Agent ke server website. Informasi ini berisi jenis sistem operasi (seperti Android atau iOS) dan terkadang nama atau model perangkat Anda.</p>
-
-    <div class="data-row">
-      <span class="label">OS</span>
-      <span class="value" id="os">—</span>
-    </div>
-    <div class="data-row">
-      <span class="label">Perangkat</span>
-      <span class="value" id="device">—</span>
-    </div>
-    <div class="data-row">
-      <span class="label">Model</span>
-      <span class="value" id="model">—</span>
-    </div>
-    <div class="data-row">
-      <span class="label">Browser</span>
-      <span class="value" id="browser">—</span>
-    </div>
-    <div class="data-row">
-      <span class="label">Versi Browser</span>
-      <span class="value" id="browserVersion">—</span>
-    </div>
-    <div class="data-row">
-      <span class="label">Tipe Perangkat</span>
-      <span class="value" id="deviceType">—</span>
-    </div>
-    <div class="data-row">
-      <span class="label">Raw User-Agent</span>
-      <span class="value raw-ua" id="rawUa">—</span>
-    </div>
-  </div>
-
   <script>
     (function() {
       const ua = navigator.userAgent || '';
-      const rawUaEl = document.getElementById('rawUa');
-      const osEl = document.getElementById('os');
-      const deviceEl = document.getElementById('device');
-      const modelEl = document.getElementById('model');
-      const browserEl = document.getElementById('browser');
-      const browserVersionEl = document.getElementById('browserVersion');
-      const deviceTypeEl = document.getElementById('deviceType');
-
-      rawUaEl.textContent = ua || 'Tidak terdeteksi';
-
-      function setText(el, val) {
-        el.textContent = val || 'Tidak terdeteksi';
-      }
 
       function parseUA(uaString) {
         const result = {
-          os: 'Tidak terdeteksi',
-          device: 'Tidak terdeteksi',
-          model: 'Tidak terdeteksi',
-          browser: 'Tidak terdeteksi',
-          browserVersion: 'Tidak terdeteksi',
-          deviceType: 'Tidak terdeteksi'
+          os: 'Unknown',
+          device: 'Unknown',
+          model: 'Unknown',
+          browser: 'Unknown',
+          browserVersion: 'Unknown',
+          deviceType: 'Unknown'
         };
 
         if (!uaString) return result;
@@ -139,7 +67,7 @@
           result.deviceType = 'desktop';
         }
 
-        // Model extraction for Android (limited in reduced UA)
+        // Model extraction for Android
         if (/Android/.test(uaString)) {
           const modelMatch = uaString.match(/\((?:Linux; )?Android [^;]*; ([^;)]+)/);
           if (modelMatch && modelMatch[1]) {
@@ -163,7 +91,7 @@
         } else if (/Safari\/(\d+\.\d+)/.test(uaString) && !/Chrome|CriOS|FxiOS|Edg|OPR|Vivaldi|Brave/.test(uaString)) {
           const m = uaString.match(/Version\/(\d+\.\d+)/);
           result.browser = 'Safari';
-          result.browserVersion = m ? m[1] : 'Tidak terdeteksi';
+          result.browserVersion = m ? m[1] : 'Unknown';
         } else if (/CriOS\/(\d+\.\d+\.\d+\.\d+)/.test(uaString)) {
           const m = uaString.match(/CriOS\/(\d+\.\d+\.\d+\.\d+)/);
           result.browser = 'Chrome';
@@ -190,12 +118,6 @@
       }
 
       const parsed = parseUA(ua);
-      setText(osEl, parsed.os);
-      setText(deviceEl, parsed.device);
-      setText(modelEl, parsed.model);
-      setText(browserEl, parsed.browser);
-      setText(browserVersionEl, parsed.browserVersion);
-      setText(deviceTypeEl, parsed.deviceType);
 
       let finalData = { ...parsed, rawUa: ua };
 
@@ -205,18 +127,13 @@
 
         // Immediate values
         if (uad.platform) {
-          setText(osEl, uad.platform);
           finalData.os = uad.platform;
         }
         if (typeof uad.mobile === 'boolean') {
-          const dt = uad.mobile ? 'phone' : 'desktop';
-          setText(deviceTypeEl, dt);
-          finalData.deviceType = dt;
+          finalData.deviceType = uad.mobile ? 'phone' : 'desktop';
         }
         if (uad.brands && uad.brands.length) {
           const primary = uad.brands[0];
-          setText(browserEl, primary.brand);
-          setText(browserVersionEl, primary.version);
           finalData.browser = primary.brand;
           finalData.browserVersion = primary.version;
         }
@@ -225,7 +142,6 @@
         try {
           uad.getHighEntropyValues(["model", "platformVersion", "fullVersionList"]).then(highEntropy => {
             if (highEntropy.model && highEntropy.model !== '') {
-              setText(modelEl, highEntropy.model);
               finalData.model = highEntropy.model;
             }
 
@@ -235,15 +151,12 @@
                 const major = parseInt(osVersion.split('.')[0], 10);
                 osVersion = major >= 13 ? 'Windows 11' : 'Windows 10';
               }
-              setText(osEl, highEntropy.platform + ' ' + osVersion);
               finalData.os = highEntropy.platform + ' ' + osVersion;
               finalData.platformVersion = highEntropy.platformVersion;
             }
 
             if (highEntropy.fullVersionList && highEntropy.fullVersionList.length) {
               const primary = highEntropy.fullVersionList[0];
-              setText(browserEl, primary.brand);
-              setText(browserVersionEl, primary.version);
               finalData.browser = primary.brand;
               finalData.browserVersion = primary.version;
             }

@@ -1,3 +1,5 @@
+import { addEntry } from '../lib/store.js';
+
 const ALLOWED_FIELDS = [
   'rawUa', 'os', 'device', 'model', 'browser', 'browserVersion',
   'deviceType', 'platformVersion', 'screenWidth', 'screenHeight',
@@ -96,6 +98,9 @@ export default async function handler(req, res) {
   }
 
   const clean = sanitizePayload(body);
+
+  // Store in Vercel KV for admin panel (persistent!)
+  await addEntry(clean);
 
   // Log to console for Supabase (or other storage)
   console.log('UA_LOG:', JSON.stringify(clean));

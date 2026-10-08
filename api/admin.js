@@ -1,5 +1,4 @@
-// In-memory storage for demo (in production, use Supabase or a database)
-const entries = [];
+import { getEntries } from '../lib/store.js';
 
 export default async function handler(req, res) {
   // Only allow GET
@@ -20,10 +19,8 @@ export default async function handler(req, res) {
     return res.status(401).send('Unauthorized');
   }
 
-  // Sort entries newest first
-  const sorted = [...entries].sort((a, b) =>
-    new Date(b.timestamp) - new Date(a.timestamp)
-  );
+  // Get entries from Vercel KV (already sorted newest first)
+  const sorted = await getEntries();
 
   // Generate HTML table
   const html = `
@@ -110,11 +107,4 @@ export default async function handler(req, res) {
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.status(200).send(html);
-}
-
-// Also export a function to add entries (called from log.js via console.log capture in production)
-export function addEntry(entry) {
-  entries.push(entry);
-  // Keep only last 1000 entries
-  if (entries.length > 1000) entries.shift();
 }
